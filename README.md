@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 المساعد العقاري الذكي | Smart Real Estate Agent
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+**نظام إدارة عقارية متكامل مدعوم بالذكاء الاصطناعي وواتساب**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+![Next.js](https://img.shields.io/badge/Next.js_14-000?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+
+</div>
+
+---
+
+## 📋 نبذة عن المشروع
+
+**المساعد العقاري الذكي** هو منصة SaaS متكاملة تحوّل واتساب الشركات العقارية إلى محرك مبيعات ذكي يعمل **24 ساعة / 7 أيام**. يعتمد النظام على بوت ذكاء اصطناعي يستقبل استفسارات العملاء عبر واتساب، يفهم طلباتهم بالعربي، يبحث في قاعدة العقارات، ويحجز المعاينات تلقائياً — كل هذا بدون تدخل بشري.
+
+### 🎯 المشكلة التي يحلها
+
+- الشركات العقارية تخسر عملاء بسبب التأخر في الرد على الاستفسارات
+- الموظفون يقضون وقتاً طويلاً في الرد على أسئلة متكررة
+- صعوبة إدارة عدد كبير من المحادثات والعملاء المحتملين
+- عدم وجود نظام موحد لمتابعة العملاء من الاستفسار إلى إغلاق الصفقة
+
+### 💡 الحل
+
+نظام أتمتة عقارية شامل يتكون من:
+
+1. **بوت واتساب ذكي** — يرد فوراً، يفهم العربي بكل لهجاته، ويبحث عن العقارات المناسبة
+2. **لوحة تحكم متكاملة** — لإدارة العقارات، العملاء، المواعيد، الفريق، والمحادثات
+3. **نظام Multi-tenant** — كل شركة لها بيئة معزولة ومستقلة تماماً
+
+---
+
+## ✨ المميزات الرئيسية
+
+| الميزة | الوصف |
+|--------|-------|
+| 🤖 **بوت ذكي بالـ AI** | يفهم الطلبات بالعربي ويبحث ويحجز تلقائياً |
+| 📱 **واتساب مباشر** | بدون تطبيقات إضافية — العميل يتواصل من واتساب |
+| 📊 **لوحة تحكم عربية** | إدارة شاملة مع تحديث لحظي (Realtime) |
+| 👥 **إدارة فريق** | وكلاء ومدراء بصلاحيات مختلفة |
+| 🔒 **أمان متقدم** | تشفير + Row Level Security + عزل كامل |
+| ⚡ **تحديث لحظي** | رسائل وإشعارات فورية |
+| 🌙 **وضع داكن** | دعم كامل للوضع الداكن مع حفظ التفضيل |
+| 📱 **متجاوب** | تصميم متوافق مع جميع الأجهزة |
+
+---
+
+## 🔄 كيف يعمل النظام
+
+```
+💬 العميل يرسل واتساب → 🤖 البوت يرد ويبحث → 📝 يسجل العميل تلقائياً
+→ 🏠 يعرض العقارات المناسبة → 📅 يحجز معاينة → 👤 يحول للوكيل → 🎉 صفقة ناجحة!
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 👥 الأدوار في النظام
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| الدور | الوصف |
+|-------|-------|
+| 👑 **المالك** | ينشئ المنظمة، يبني الفريق، يراقب الأداء |
+| 🏗️ **شركة التطوير** | يرفع المشاريع ويُفعّل البوت للبيع التلقائي |
+| 📣 **المسوق** | يستقبل العملاء ويتابع المحادثات ويغلق الصفقات |
+| 🏡 **العميل** | يرسل رسالة واتساب ويحصل على نتائج فورية |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ التقنيات المستخدمة
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend:** Next.js 14 (App Router) + TypeScript + TailwindCSS
+- **Backend:** Next.js API Routes + Supabase Edge Functions
+- **Database:** Supabase (PostgreSQL) مع Row Level Security
+- **AI:** OpenAI GPT مع Function Calling
+- **WhatsApp:** Wasender API
+- **Auth:** Supabase Auth (JWT + Refresh Tokens)
+- **Font:** IBM Plex Sans Arabic
+- **UI:** Lucide React Icons + react-hot-toast
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 التشغيل المحلي
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### المتطلبات
+- Node.js 18+
+- حساب Supabase
+- مفتاح OpenAI API
+- حساب Wasender (لواتساب)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### الخطوات
+
+```bash
+# 1. استنساخ المشروع
+git clone https://github.com/basem902/smart-realestate-agent.git
+cd smart-realestate-agent
+
+# 2. تثبيت الحزم
+npm install
+
+# 3. إعداد المتغيرات البيئية
+cp .env.example .env.local
+# عدّل القيم في .env.local
+
+# 4. تشغيل قاعدة البيانات
+# نفّذ ملف supabase/migrations/001_initial_schema.sql في Supabase Dashboard
+
+# 5. تشغيل التطبيق
+npm run dev
+```
+
+الآن افتح [http://localhost:3000](http://localhost:3000) 🎉
+
+---
+
+## 📁 هيكل المشروع
+
+```
+src/
+├── app/
+│   ├── page.tsx              ← صفحة الهبوط
+│   ├── login/                ← تسجيل الدخول
+│   ├── register/             ← إنشاء حساب
+│   ├── journeys/             ← رحلات المستخدمين (4 رحلات)
+│   ├── dashboard/            ← لوحة التحكم
+│   │   ├── conversations/    ← المحادثات
+│   │   ├── properties/       ← العقارات
+│   │   ├── leads/            ← العملاء المحتملين
+│   │   ├── appointments/     ← المواعيد
+│   │   ├── team/             ← الفريق
+│   │   └── settings/         ← الإعدادات
+│   └── api/                  ← واجهات API
+├── components/               ← المكونات (chat, dashboard, ui)
+├── lib/                      ← المكتبات (ai, auth, whatsapp, supabase)
+└── middleware.ts             ← حماية المسارات
+```
+
+---
+
+## 👤 المطور
+
+**باسم محمد الحجري**
+- 📱 واتساب: [+966 558 048 004](https://wa.me/966558048004)
+- 📞 اتصال: 0558048004
+
+---
+
+<div align="center">
+
+**المساعد العقاري الذكي** © 2026 — جميع الحقوق محفوظة
+
+</div>

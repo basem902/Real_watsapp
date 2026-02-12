@@ -5,6 +5,23 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { registerSchema } from '@/lib/utils/validators'
 import { rateLimit, RATE_LIMITS, rateLimitKey, rateLimitHeaders } from '@/lib/rate-limit'
 
+// Arabic error messages for common Supabase auth errors
+function translateAuthError(message: string): string {
+  if (message.includes('already been registered') || message.includes('already exists')) {
+    return 'البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول أو استخدام بريد آخر'
+  }
+  if (message.includes('password') && message.includes('weak')) {
+    return 'كلمة المرور ضعيفة. استخدم حروف وأرقام ورموز'
+  }
+  if (message.includes('email') && message.includes('invalid')) {
+    return 'البريد الإلكتروني غير صالح'
+  }
+  if (message.includes('rate limit') || message.includes('too many')) {
+    return 'تم تجاوز الحد المسموح. حاول مرة أخرى بعد دقائق'
+  }
+  return message
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Rate limit by IP
@@ -34,7 +51,11 @@ export async function POST(request: NextRequest) {
       password,
       email_confirm: true,
     })
-    if (authError) throw new Error(authError.message)
+    if (authError) {
+      const translatedError = translateAuthError(authError.message)
+      const status = authError.message.includes('already') ? 409 : 400
+      return NextResponse.json({ success: false, error: translatedError }, { status })
+    }
     const userId = authData.user.id
 
     try {
@@ -73,7 +94,7 @@ export async function POST(request: NextRequest) {
       throw innerError
     }
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Registration failed'
+    const message = error instanceof Error ? translateAuthError(error.message) : 'فشل إنشاء الحساب. حاول مرة أخرى'
     return NextResponse.json(
       { success: false, error: message },
       { status: 500 }

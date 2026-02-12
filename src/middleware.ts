@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
     pathname === '/register' ||
     pathname.startsWith('/journeys') ||
     pathname.startsWith('/api/webhook') ||
+    pathname.startsWith('/api/auth') ||
     pathname.startsWith('/_next') ||
     pathname.includes('.')
   ) {
@@ -52,13 +53,16 @@ export async function middleware(request: NextRequest) {
   if (!user && pathname.startsWith('/dashboard')) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
 
-  // Redirect authenticated users away from login/register
+  // Redirect authenticated users away from login/register to dashboard
   if (user && (pathname === '/login' || pathname === '/register')) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    const redirect = request.nextUrl.searchParams.get('redirect')
+    url.pathname = redirect || '/dashboard'
+    url.search = ''
     return NextResponse.redirect(url)
   }
 

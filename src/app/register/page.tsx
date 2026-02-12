@@ -4,13 +4,20 @@ import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { Building2, User, Mail, Lock, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Building2, CheckCircle, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import Select from '@/components/ui/Select'
 import Card from '@/components/ui/Card'
 
 type Step = 'form' | 'success'
+
+const COMPANY_TYPE_OPTIONS = [
+  { value: 'agency', label: 'مكتب عقاري' },
+  { value: 'developer', label: 'شركة تطوير عقاري' },
+  { value: 'individual', label: 'مسوّق فردي' },
+]
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -19,6 +26,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [companyType, setCompanyType] = useState('agency')
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -61,7 +69,6 @@ export default function RegisterPage() {
     setErrors({})
 
     try {
-      // 1. Register via API
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,6 +77,7 @@ export default function RegisterPage() {
           fullName: fullName.trim(),
           email: email.trim().toLowerCase(),
           password,
+          companyType,
         }),
       })
 
@@ -83,7 +91,7 @@ export default function RegisterPage() {
         return
       }
 
-      // 2. Auto-login
+      // Auto-login
       const supabase = createClient()
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
@@ -96,11 +104,11 @@ export default function RegisterPage() {
         return
       }
 
-      // 3. Show success then redirect
+      // Show success then redirect to dashboard (trial active)
       setStep('success')
       setTimeout(() => {
         router.push('/dashboard')
-      }, 1500)
+      }, 2000)
     } catch {
       toast.error('حدث خطأ في الاتصال. تحقق من اتصال الإنترنت')
     } finally {
@@ -116,7 +124,8 @@ export default function RegisterPage() {
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
           <h2 className="text-xl font-bold text-gray-900">تم إنشاء الحساب بنجاح!</h2>
-          <p className="text-gray-600">جاري التوجيه إلى لوحة التحكم...</p>
+          <p className="text-gray-600">لديك فترة تجريبية مجانية لمدة 7 أيام</p>
+          <p className="text-sm text-gray-500">جاري التوجيه إلى لوحة التحكم...</p>
           <div className="mt-4">
             <div className="mx-auto h-1 w-32 overflow-hidden rounded-full bg-gray-200">
               <div className="h-full animate-progress bg-primary rounded-full" />
@@ -136,6 +145,7 @@ export default function RegisterPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">المساعد العقاري الذكي</h1>
           <p className="mt-2 text-gray-500">إنشاء حساب جديد لمكتبك العقاري</p>
+          <p className="mt-1 text-xs text-blue-600">فترة تجريبية مجانية 7 أيام</p>
         </div>
 
         <Card className="shadow-lg">
@@ -155,6 +165,15 @@ export default function RegisterPage() {
               {errors.organizationName && (
                 <p className="mt-1 text-xs text-red-500">{errors.organizationName}</p>
               )}
+            </div>
+
+            <div>
+              <Select
+                label="نوع النشاط"
+                options={COMPANY_TYPE_OPTIONS}
+                value={companyType}
+                onChange={(e) => setCompanyType(e.target.value)}
+              />
             </div>
 
             <div>
@@ -217,7 +236,7 @@ export default function RegisterPage() {
               className="w-full"
               size="lg"
             >
-              {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
+              {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب — تجريبي مجاني'}
             </Button>
           </form>
 

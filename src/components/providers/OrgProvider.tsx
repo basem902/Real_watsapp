@@ -43,15 +43,12 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     try {
       const supabase = createClient()
 
-      // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser()
       if (userError || !user) {
-        // Not logged in — redirect to login
         router.push('/login')
         return
       }
 
-      // Get org member
       const { data: member, error: memberError } = await supabase
         .from('org_members')
         .select('*')
@@ -68,7 +65,6 @@ export function OrgProvider({ children }: { children: ReactNode }) {
       setOrgMember(member)
       setPermissions(getPermissions(member.role))
 
-      // Fetch organization and settings in parallel
       const [{ data: org, error: orgError }, { data: orgSettings }] = await Promise.all([
         supabase
           .from('organizations')
@@ -86,6 +82,21 @@ export function OrgProvider({ children }: { children: ReactNode }) {
         setError('حدث خطأ في تحميل بيانات المؤسسة')
         setLoading(false)
         return
+      }
+
+      // Check org status — redirect if not active/trial
+      if (org.status !== 'active' && org.status !== 'trial') {
+        router.push(`/pending?status=${org.status}`)
+        return
+      }
+
+      // Check trial expiry
+      if (org.status === 'trial' && org.trial_ends_at) {
+        const trialEnd = new Date(org.trial_ends_at)
+        if (trialEnd <= new Date()) {
+          router.push('/pending?status=trial_expired')
+          return
+        }
       }
 
       setOrganization(org)

@@ -5,6 +5,7 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
   fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل'),
   organizationName: z.string().min(2, 'اسم المكتب يجب أن يكون حرفين على الأقل'),
+  companyType: z.enum(['agency', 'developer', 'individual']).default('agency'),
 })
 
 export const loginSchema = z.object({
@@ -87,4 +88,22 @@ export const integrationsSchema = z.object({
   wasender_api_key: z.string().optional(),
   wasender_webhook_secret: z.string().optional(),
   openai_api_key: z.string().optional(),
+})
+
+export const inviteLinkSchema = z.object({
+  default_role: z.enum(['admin', 'agent', 'viewer']).default('agent'),
+  max_uses: z.number().int().min(1).optional(),
+  expires_in_days: z.number().int().min(1).max(365).optional(),
+})
+
+export const inviteRegisterSchema = z.object({
+  invite_code: z.string().min(1, 'رمز الدعوة مطلوب'),
+  email: z.string().email('البريد الإلكتروني غير صحيح'),
+  password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
+  fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل'),
+})
+
+export const adminCompanyActionSchema = z.object({
+  action: z.enum(['approve', 'reject', 'suspend', 'reactivate']),
+  rejection_reason: z.string().optional(),
 })

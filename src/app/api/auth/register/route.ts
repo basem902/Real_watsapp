@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { registerSchema } from '@/lib/utils/validators'
 import { rateLimit, RATE_LIMITS, rateLimitKey, rateLimitHeaders } from '@/lib/rate-limit'
+import { notifySuperAdmins } from '@/lib/notifications/sender'
 
-// Arabic error messages for common Supabase auth errors
 function translateAuthError(message: string): string {
   if (message.includes('already been registered') || message.includes('already exists')) {
     return 'البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول أو استخدام بريد آخر'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { organizationName, fullName, email, password } = parsed.data
+    const { organizationName, fullName, email, password, companyType } = parsed.data
 
     // 1. Create auth user
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
@@ -59,11 +59,21 @@ export async function POST(request: NextRequest) {
     const userId = authData.user.id
 
     try {
-      // 2. Create organization
+      // 2. Create organization with trial status (7 days)
       const slug = organizationName.replace(/\s+/g, '-').toLowerCase() + '-' + Date.now().toString(36)
+      const trialEndsAt = new Date()
+      trialEndsAt.setDate(trialEndsAt.getDate() + 7)
+
       const { data: org, error: orgError } = await supabaseAdmin
         .from('organizations')
-        .insert({ name: organizationName, slug })
+        .insert({
+          name: organizationName,
+          slug,
+          status: 'trial',
+          company_type: companyType,
+          is_active: true,
+          trial_ends_at: trialEndsAt.toISOString(),
+        })
         .select()
         .single()
       if (orgError) throw orgError
@@ -84,8 +94,16 @@ export async function POST(request: NextRequest) {
         user_metadata: { organization_id: org.id, role: 'owner' },
       })
 
+      // 5. Notify super admins about new registration
+      notifySuperAdmins({
+        event: 'new_company_registered',
+        orgId: org.id,
+        orgName: organizationName,
+        companyType,
+      }).catch(() => {}) // Fire and forget
+
       return NextResponse.json(
-        { success: true, data: { userId, orgId: org.id } },
+        { success: true, data: { userId, orgId: org.id, status: 'trial' } },
         { status: 201 }
       )
     } catch (innerError) {

@@ -9,6 +9,10 @@ export type Role = 'owner' | 'admin' | 'agent' | 'viewer';
 
 export type Plan = 'free' | 'basic' | 'pro' | 'agency';
 
+export type OrgStatus = 'pending' | 'trial' | 'active' | 'suspended' | 'rejected';
+
+export type CompanyType = 'agency' | 'developer' | 'individual';
+
 export type PropertyType = 'شقة' | 'فيلا' | 'دوبلكس' | 'أرض' | 'مكتب' | 'محل تجاري';
 
 export type ListingType = 'بيع' | 'إيجار';
@@ -32,7 +36,11 @@ export type NotificationType =
   | 'human_requested'
   | 'new_lead'
   | 'new_appointment'
-  | 'team_update';
+  | 'team_update'
+  | 'org_approved'
+  | 'org_rejected'
+  | 'new_member_joined'
+  | 'trial_expiring';
 
 // ===== DATABASE ROW TYPES =====
 
@@ -44,6 +52,13 @@ export interface Organization {
   primary_color: string;
   plan: Plan;
   is_active: boolean;
+  status: OrgStatus;
+  company_type: CompanyType;
+  trial_ends_at: string | null;
+  rejection_reason: string | null;
+  approved_at: string | null;
+  approved_by: string | null;
+  invite_approval_required: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -336,4 +351,57 @@ export interface SearchFilters {
   bedrooms?: number;
   city?: string;
   district?: string;
+}
+
+// ===== MULTI-COMPANY TYPES =====
+
+export interface OrgInvitation {
+  id: string;
+  organization_id: string;
+  invite_code: string;
+  created_by: string;
+  default_role: Role;
+  max_uses: number | null;
+  used_count: number;
+  expires_at: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PendingMember {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  invite_id: string | null;
+  display_name: string;
+  status: 'pending' | 'approved' | 'rejected';
+  requested_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+}
+
+export interface PlatformCompanyStats {
+  id: string;
+  name: string;
+  slug: string;
+  company_type: CompanyType;
+  status: OrgStatus;
+  plan: Plan;
+  created_at: string;
+  trial_ends_at: string | null;
+  approved_at: string | null;
+  members_count: number;
+  properties_count: number;
+  conversations_count: number;
+}
+
+export interface PlatformStats {
+  total_companies: number;
+  pending_companies: number;
+  trial_companies: number;
+  active_companies: number;
+  total_users: number;
+  total_properties: number;
+  total_conversations: number;
 }

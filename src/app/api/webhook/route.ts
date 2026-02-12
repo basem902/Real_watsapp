@@ -67,6 +67,21 @@ export async function POST(request: NextRequest) {
     const orgId = orgData?.organization_id || process.env.DEFAULT_ORG_ID
     if (!orgId) return NextResponse.json({ received: true })
 
+    // Check org is active or in trial period
+    const { data: orgCheck } = await supabaseAdmin
+      .from('organizations')
+      .select('status, trial_ends_at')
+      .eq('id', orgId)
+      .single()
+    if (!orgCheck || !['active', 'trial'].includes(orgCheck.status)) {
+      return NextResponse.json({ received: true })
+    }
+    if (orgCheck.status === 'trial' && orgCheck.trial_ends_at) {
+      if (new Date(orgCheck.trial_ends_at) <= new Date()) {
+        return NextResponse.json({ received: true })
+      }
+    }
+
     // Verify signature with org-specific or default secret
     const secret = orgData?.wasender_webhook_secret || process.env.WASENDER_WEBHOOK_SECRET || ''
     if (secret && signature) {

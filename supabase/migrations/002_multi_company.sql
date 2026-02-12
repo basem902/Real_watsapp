@@ -170,6 +170,8 @@ COMMENT ON FUNCTION get_org_by_invite_code IS 'دالة عامة للتحقق م
 
 -- ===== 7. UPDATE get_org_by_wasender_instance to check status =====
 -- Allow trial and active orgs only
+-- Must drop first because return type may differ from original
+DROP FUNCTION IF EXISTS get_org_by_wasender_instance(TEXT);
 
 CREATE OR REPLACE FUNCTION get_org_by_wasender_instance(p_instance_id TEXT)
 RETURNS TABLE (

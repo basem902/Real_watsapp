@@ -82,6 +82,8 @@ export default function NotificationBell() {
       <button
         onClick={() => setOpen(!open)}
         className="relative rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+        aria-label={`الإشعارات${unreadCount > 0 ? ` (${unreadCount} غير مقروءة)` : ''}`}
+        aria-expanded={open}
       >
         <Bell size={20} />
         {unreadCount > 0 && (

@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
+import { validateEnv } from '@/lib/utils/env-check'
 import './globals.css'
+
+// C5: Validate environment variables at startup
+validateEnv()
 
 export const metadata: Metadata = {
   title: 'المساعد العقاري الذكي',

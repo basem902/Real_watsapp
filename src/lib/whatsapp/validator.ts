@@ -18,5 +18,10 @@ export function verifyWebhookSignature(rawBody: string, signature: string, secre
 export function verifyWebhookToken(token: string): boolean {
   const expectedToken = process.env.WASENDER_WEBHOOK_SECRET || ''
   if (!token || !expectedToken) return false
-  return token === expectedToken
+  // S4: Use timing-safe comparison to prevent timing attacks
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expectedToken))
+  } catch {
+    return false
+  }
 }

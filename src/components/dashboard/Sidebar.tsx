@@ -63,7 +63,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Logo / Brand */}
         <div className="flex h-16 items-center justify-between px-4 border-b border-white/10">
           <h1 className="text-lg font-bold">العقارات الذكية</h1>
-          <button onClick={onClose} className="lg:hidden text-white/70 hover:text-white">
+          <button onClick={onClose} className="lg:hidden text-white/70 hover:text-white" aria-label="إغلاق القائمة">
             <X size={20} />
           </button>
         </div>

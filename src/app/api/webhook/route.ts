@@ -79,6 +79,18 @@ export async function POST(request: NextRequest) {
     const parsed = parseIncomingMessage(body)
     if (!parsed) return NextResponse.json({ received: true }) // not a message we can process
 
+    // AI3: Prevent bot-to-bot loop — skip messages from the bot itself
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const bodyAny = body as any
+    const fromMe = bodyAny?.data?.key?.fromMe
+      || bodyAny?.data?.data?.messages?.[0]?.key?.fromMe
+    if (fromMe) return NextResponse.json({ received: true })
+
+    // Skip empty or status messages
+    if (!parsed.content || parsed.content.trim().length === 0) {
+      return NextResponse.json({ received: true })
+    }
+
     // Check for duplicate (idempotency)
     if (parsed.messageId) {
       const { data: existing } = await supabaseAdmin

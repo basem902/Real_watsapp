@@ -10,10 +10,14 @@ import { OrgContext, WasenderConfig } from '@/types'
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify internal API key
+    // Verify internal API key (REQUIRED - reject if not configured)
     const authHeader = request.headers.get('authorization')
     const apiKey = process.env.INTERNAL_API_KEY
-    if (apiKey && authHeader !== `Bearer ${apiKey}`) {
+    if (!apiKey) {
+      console.error('[AI Route] INTERNAL_API_KEY is not configured')
+      return NextResponse.json({ error: 'Server misconfiguration' }, { status: 500 })
+    }
+    if (authHeader !== `Bearer ${apiKey}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

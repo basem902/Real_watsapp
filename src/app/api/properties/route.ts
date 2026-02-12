@@ -1,16 +1,18 @@
 export const runtime = 'nodejs'
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit, RATE_LIMITS, rateLimitKey, rateLimitHeaders } from '@/lib/rate-limit'
 import { checkPropertyLimit } from '@/lib/utils/usage-limits'
+import { propertySchema } from '@/lib/utils/validators'
+import { apiSuccess, apiError } from '@/lib/utils/api-response'
 
 export async function GET(request: NextRequest) {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) return apiError('Unauthorized', { status: 401 })
 
     const { data: member } = await supabaseAdmin
       .from('org_members')
@@ -18,7 +20,7 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
       .eq('is_active', true)
       .single()
-    if (!member) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    if (!member) return apiError('Forbidden', { status: 403 })
 
     const { searchParams } = new URL(request.url)
     const page = Number(searchParams.get('page') || '1')
@@ -38,18 +40,23 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     if (type) query = query.eq('property_type', type)
     if (listing) query = query.eq('listing_type', listing)
-    if (search) query = query.or(`title.ilike.%${search}%,city.ilike.%${search}%`)
+    if (search) {
+      // S1: Sanitize search input — escape special SQL/PostgREST chars
+      const sanitized = search.replace(/[%_\\()'"]/g, '').trim().slice(0, 100)
+      if (sanitized) {
+        query = query.or(`title.ilike.%${sanitized}%,city.ilike.%${sanitized}%`)
+      }
+    }
 
     const { data, count, error } = await query
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) return apiError(error.message, { status: 500 })
 
-    return NextResponse.json({
-      success: true,
+    return apiSuccess({
       data,
       pagination: { page, pageSize, total: count || 0 },
     })
   } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return apiError('Server error', { status: 500 })
   }
 }
 
@@ -57,14 +64,11 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) return apiError('Unauthorized', { status: 401 })
 
     const rl = rateLimit(rateLimitKey('properties', user.id), RATE_LIMITS.properties)
     if (!rl.allowed) {
-      return NextResponse.json(
-        { error: 'Rate limited' },
-        { status: 429, headers: rateLimitHeaders(rl) }
-      )
+      return apiError('Rate limited', { status: 429, headers: rateLimitHeaders(rl) })
     }
 
     const { data: member } = await supabaseAdmin
@@ -74,24 +78,29 @@ export async function POST(request: NextRequest) {
       .eq('is_active', true)
       .single()
     if (!member || !['owner', 'admin', 'agent'].includes(member.role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      return apiError('Forbidden', { status: 403 })
     }
 
     const usageCheck = await checkPropertyLimit(member.organization_id)
     if (!usageCheck.allowed) {
-      return NextResponse.json({ error: usageCheck.message }, { status: 403 })
+      return apiError(usageCheck.message || 'Property limit reached', { status: 403 })
     }
 
     const body = await request.json()
+    const parsed = propertySchema.safeParse(body)
+    if (!parsed.success) {
+      return apiError(parsed.error.issues[0].message, { status: 400 })
+    }
+
     const { data, error } = await supabaseAdmin
       .from('properties')
-      .insert({ ...body, organization_id: member.organization_id, created_by: user.id })
+      .insert({ ...parsed.data, organization_id: member.organization_id, created_by: user.id })
       .select()
       .single()
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ success: true, data }, { status: 201 })
+    if (error) return apiError(error.message, { status: 500 })
+    return apiSuccess({ data, status: 201 })
   } catch {
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return apiError('Server error', { status: 500 })
   }
 }

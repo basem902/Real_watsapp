@@ -35,6 +35,25 @@ export async function processMessage(
     return { response: '', toolsUsed: [] }
   }
 
+  // AI2: Enforce working hours in code (not just prompt)
+  if (settings.working_hours_start && settings.working_hours_end) {
+    const now = new Date()
+    // Use Saudi Arabia timezone (UTC+3)
+    const saTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' }))
+    const currentMinutes = saTime.getHours() * 60 + saTime.getMinutes()
+    const [startH, startM] = settings.working_hours_start.split(':').map(Number)
+    const [endH, endM] = settings.working_hours_end.split(':').map(Number)
+    const startMinutes = startH * 60 + startM
+    const endMinutes = endH * 60 + endM
+
+    if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
+      return {
+        response: `عذراً، نحن خارج أوقات العمل حالياً. ساعات العمل من ${settings.working_hours_start} إلى ${settings.working_hours_end}. سنرد عليك في أقرب وقت ممكن. 🕐`,
+        toolsUsed: [],
+      }
+    }
+  }
+
   // 2. Fetch last 15 messages for context
   const { data: history } = await supabaseAdmin
     .from('messages')

@@ -48,7 +48,7 @@ WHERE organization_id = '11111111-1111-1111-1111-111111111111';
 -- السجل أنشأه المُشغِّل تلقائياً، لا حاجة لإدراج إضافي
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 4. العقارات التجريبية (10 عقارات متنوعة)
+-- 4. العقارات التجريبية (10 عقارات متنوعة) — صور حقيقية من Unsplash
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- عقار 1: شقة في الرياض - حي النرجس
@@ -65,7 +65,10 @@ INSERT INTO properties (
     'الرياض', 'النرجس', 'شارع الأمير محمد بن سلمان',
     24.8200000, 46.6400000,
     ARRAY['تكييف مركزي','مواقف خاصة','مصعد','حارس أمن','حديقة'],
-    ARRAY['https://placeholder.co/property1-1.jpg','https://placeholder.co/property1-2.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -83,7 +86,11 @@ INSERT INTO properties (
     'الرياض', 'الملقا', 'طريق الملك فهد الفرعي',
     24.8000000, 46.6200000,
     ARRAY['مسبح خاص','حديقة','مجلس منفصل','غرفة خادمة','مواقف متعددة','تكييف مركزي'],
-    ARRAY['https://placeholder.co/property2-1.jpg','https://placeholder.co/property2-2.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -101,7 +108,10 @@ INSERT INTO properties (
     'جدة', 'الحمراء', 'شارع فلسطين',
     21.5400000, 39.1700000,
     ARRAY['مفروشة بالكامل','قريبة من الكورنيش','تكييف سبليت','موقف سيارة'],
-    ARRAY['https://placeholder.co/property3-1.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1493809842364-78f1e9615e2c?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -119,7 +129,10 @@ INSERT INTO properties (
     'الدمام', 'الشاطئ', 'طريق الكورنيش',
     26.4300000, 50.1100000,
     ARRAY['إطلالة بحرية','طابقين','تراس','تكييف مركزي','مواقف خاصة','حديقة'],
-    ARRAY['https://placeholder.co/property4-1.jpg','https://placeholder.co/property4-2.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -137,7 +150,9 @@ INSERT INTO properties (
     'مكة', 'العوالي', 'شارع العوالي العام',
     21.3800000, 39.8700000,
     ARRAY['شارعين','خدمات متوفرة','قريبة من المسجد','موقع استراتيجي'],
-    ARRAY['https://placeholder.co/property5-1.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -155,7 +170,10 @@ INSERT INTO properties (
     'الرياض', 'العليا', 'طريق العليا العام',
     24.6900000, 46.6800000,
     ARRAY['خدمات استقبال','قاعات اجتماعات','تكييف مركزي','أمن 24 ساعة','مواقف زوار'],
-    ARRAY['https://placeholder.co/property6-1.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -173,7 +191,9 @@ INSERT INTO properties (
     'جدة', 'الصفا', 'شارع الأمير سلطان',
     21.5600000, 39.1900000,
     ARRAY['واجهة عريضة','شارع رئيسي','مواقف أمامية','كهرباء تجارية'],
-    ARRAY['https://placeholder.co/property7-1.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -191,7 +211,11 @@ INSERT INTO properties (
     'جدة', 'أبحر الشمالية', 'طريق الأمير نايف',
     21.7300000, 39.1000000,
     ARRAY['مسبح خاص','حديقة استوائية','قريبة من الشاطئ','غرفة سينما','مجلس خارجي','غرفة سائق'],
-    ARRAY['https://placeholder.co/property8-1.jpg','https://placeholder.co/property8-2.jpg','https://placeholder.co/property8-3.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1576941089067-2de3c901e126?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -209,7 +233,9 @@ INSERT INTO properties (
     'الدمام', 'الفيصلية', 'شارع الخليج',
     26.4100000, 50.0900000,
     ARRAY['قريبة من المدارس','تكييف سبليت','مواقف','مصعد','خزان مستقل'],
-    ARRAY['https://placeholder.co/property9-1.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=800&h=600&fit=crop'
+    ],
     'محجوز'
 );
 
@@ -227,7 +253,10 @@ INSERT INTO properties (
     'مكة', 'الزاهر', 'شارع إبراهيم الخليل',
     21.4200000, 39.8200000,
     ARRAY['قريبة من الحرم','إطلالة على الجبل','تكييف مركزي','مصعد','أمن وحراسة'],
-    ARRAY['https://placeholder.co/property10-1.jpg','https://placeholder.co/property10-2.jpg'],
+    ARRAY[
+        'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop',
+        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&h=600&fit=crop'
+    ],
     'متاح'
 );
 
@@ -275,7 +304,7 @@ ON CONFLICT (organization_id, month) DO UPDATE SET
 -- اكتملت البيانات التجريبية:
 --   • 1 مؤسسة (شركة النخبة العقارية — خطة pro)
 --   • إعدادات مخصصة للبوت
---   • 10 عقارات متنوعة (شقق، فلل، دوبلكس، أرض، مكتب، محل تجاري)
+--   • 10 عقارات متنوعة مع صور حقيقية من Unsplash
 --   • 1 عميل محتمل
 --   • سجل استخدام للشهر الحالي
 -- ══════════════════════════════════════════════════════════════════════════════

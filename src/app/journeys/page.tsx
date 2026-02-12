@@ -284,7 +284,7 @@ export default function JourneysPage() {
               <div className="flex flex-col items-center">
                 <div className="rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm">
                   <span className="text-lg">📊</span>
-                  <span className="mr-2 text-sm font-semibold text-[#1a365d]">
+                  <span className="ms-2 text-sm font-semibold text-[#1a365d]">
                     لوحة التحكم
                   </span>
                 </div>
@@ -294,7 +294,7 @@ export default function JourneysPage() {
               <div className="flex flex-col items-center">
                 <div className="rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm">
                   <span className="text-lg">👥</span>
-                  <span className="mr-2 text-sm font-semibold text-[#1a365d]">الفريق</span>
+                  <span className="ms-2 text-sm font-semibold text-[#1a365d]">الفريق</span>
                 </div>
                 <span className="mt-1 text-xs text-gray-400">يبني الفريق</span>
               </div>

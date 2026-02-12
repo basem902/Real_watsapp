@@ -113,7 +113,7 @@ export default function PropertiesPage() {
         <PermissionGate permission="properties:write">
           <Link href="/dashboard/properties/new">
             <Button>
-              <Plus size={16} className="ml-2" />
+              <Plus size={16} className="me-2" />
               إضافة عقار
             </Button>
           </Link>

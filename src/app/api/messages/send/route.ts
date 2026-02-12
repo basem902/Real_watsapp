@@ -1,18 +1,19 @@
 export const runtime = 'nodejs'
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit, RATE_LIMITS, rateLimitKey, rateLimitHeaders } from '@/lib/rate-limit'
 import { sendText } from '@/lib/whatsapp/sender'
 import { WasenderConfig } from '@/types'
+import { apiSuccess, apiError } from '@/lib/utils/api-response'
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return apiError('Unauthorized', { status: 401 })
     }
 
     // Get org membership
@@ -24,25 +25,25 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (!member) {
-      return NextResponse.json({ error: 'Not a member of any organization' }, { status: 403 })
+      return apiError('Not a member of any organization', { status: 403 })
     }
 
     // Check permission (owner, admin, agent can send)
     if (!['owner', 'admin', 'agent'].includes(member.role)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      return apiError('Insufficient permissions', { status: 403 })
     }
 
     // Rate limit per user
     const rl = rateLimit(rateLimitKey('sendMessage', user.id), RATE_LIMITS.sendMessage)
     if (!rl.allowed) {
-      return NextResponse.json({ error: 'Rate limited' }, { status: 429, headers: rateLimitHeaders(rl) })
+      return apiError('Rate limited', { status: 429, headers: rateLimitHeaders(rl) })
     }
 
     const body = await request.json()
     const { conversation_id, content } = body
 
     if (!conversation_id || !content) {
-      return NextResponse.json({ error: 'Missing conversation_id or content' }, { status: 400 })
+      return apiError('Missing conversation_id or content', { status: 400 })
     }
 
     // Verify conversation belongs to org
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (!conversation) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 })
+      return apiError('Conversation not found', { status: 404 })
     }
 
     // Get Wasender config
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
     const sendResult = await sendText(wasenderConfig, conversation.whatsapp_number, content)
 
     if (!sendResult.success) {
-      return NextResponse.json({ error: sendResult.error || 'Failed to send' }, { status: 500 })
+      return apiError(sendResult.error || 'Failed to send', { status: 500 })
     }
 
     // Save message
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (msgError) {
-      return NextResponse.json({ error: msgError.message }, { status: 500 })
+      return apiError(msgError.message, { status: 500 })
     }
 
     // Update conversation last_message_at
@@ -109,9 +110,9 @@ export async function POST(request: NextRequest) {
       })
     } catch { /* ignore */ }
 
-    return NextResponse.json({ success: true, data: message })
+    return apiSuccess({ data: message })
   } catch (error) {
     console.error('[Send Message] Error:', error)
-    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+    return apiError('Failed to send message', { status: 500 })
   }
 }

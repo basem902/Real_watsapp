@@ -23,7 +23,9 @@ export function parseIncomingMessage(body: any): ParsedMessage | null {
                        msg.buttonsResponseMessage?.selectedButtonId,
         timestamp: msg.messageTimestamp || Math.floor(Date.now() / 1000),
       }
-    } catch { /* fall through to format 2 */ }
+    } catch (err) {
+      console.error('[Parser] Format 1 (Wasender v2) parse error:', err)
+    }
   }
 
   // Format 2: data.key + data.message (Baileys/raw format)
@@ -51,7 +53,9 @@ export function parseIncomingMessage(body: any): ParsedMessage | null {
                        message.buttonsResponseMessage?.selectedButtonId,
         timestamp: body.data.messageTimestamp || Math.floor(Date.now() / 1000),
       }
-    } catch { /* fall through to format 3 */ }
+    } catch (err) {
+      console.error('[Parser] Format 2 (Baileys/raw) parse error:', err)
+    }
   }
 
   // Format 3: Flat format (simple webhooks)
@@ -75,7 +79,10 @@ export function parseIncomingMessage(body: any): ParsedMessage | null {
         longitude: d.longitude || d.lng,
         timestamp: d.timestamp || Math.floor(Date.now() / 1000),
       }
-    } catch { return null }
+    } catch (err) {
+      console.error('[Parser] Format 3 (flat) parse error:', err)
+      return null
+    }
   }
 
   return null

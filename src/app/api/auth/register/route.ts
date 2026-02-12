@@ -3,9 +3,20 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { registerSchema } from '@/lib/utils/validators'
+import { rateLimit, RATE_LIMITS, rateLimitKey, rateLimitHeaders } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const rl = rateLimit(rateLimitKey('register', ip), RATE_LIMITS.register)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'تم تجاوز الحد المسموح. حاول مرة أخرى لاحقاً' },
+        { status: 429, headers: rateLimitHeaders(rl) }
+      )
+    }
+
     const body = await request.json()
     const parsed = registerSchema.safeParse(body)
     if (!parsed.success) {

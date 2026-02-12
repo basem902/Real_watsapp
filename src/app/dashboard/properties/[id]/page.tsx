@@ -132,7 +132,7 @@ export default function PropertyDetailPage() {
         <PermissionGate permission="properties:write">
           <Link href={`/dashboard/properties/${property.id}?edit=true`}>
             <Button variant="outline">
-              <Edit2 size={16} className="ml-2" />
+              <Edit2 size={16} className="me-2" />
               تعديل
             </Button>
           </Link>

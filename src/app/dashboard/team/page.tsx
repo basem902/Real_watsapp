@@ -73,7 +73,7 @@ export default function TeamPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">الفريق</h1>
-        <PermissionGate permission="team:manage"><Button onClick={() => setShowInvite(true)}><Plus size={16} className="ml-2" />إضافة عضو</Button></PermissionGate>
+        <PermissionGate permission="team:manage"><Button onClick={() => setShowInvite(true)}><Plus size={16} className="me-2" />إضافة عضو</Button></PermissionGate>
       </div>
       {loading ? (
         <div className="space-y-3">{[1,2,3].map(i => <Skeleton key={i} className="h-16 rounded-lg" />)}</div>

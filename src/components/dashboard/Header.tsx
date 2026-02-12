@@ -26,6 +26,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         <button
           onClick={onMenuClick}
           className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+          aria-label="فتح القائمة الجانبية"
         >
           <Menu size={20} />
         </button>
@@ -45,6 +46,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           onClick={handleLogout}
           className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-red-600"
           title="تسجيل الخروج"
+          aria-label="تسجيل الخروج"
         >
           <LogOut size={20} />
         </button>

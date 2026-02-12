@@ -91,11 +91,14 @@ export async function handleGetPropertyDetails(
 
   if (error) return { success: false, error: 'العقار غير موجود' }
 
-  // Increment views
-  await supabaseAdmin
+  // DB4: Increment views (best-effort, non-blocking)
+  supabaseAdmin
     .from('properties')
     .update({ views_count: (data.views_count || 0) + 1 })
     .eq('id', args.property_id)
+    .then(({ error: viewError }) => {
+      if (viewError) console.error('[ToolHandler] Failed to increment views:', viewError.message)
+    })
 
   return { success: true, data }
 }
@@ -135,7 +138,9 @@ export async function handleCreateLead(
   // Increment usage
   try {
     await supabaseAdmin.rpc('increment_usage', { p_org_id: organizationId, p_field: 'ai_calls_count' })
-  } catch { /* ignore usage tracking errors */ }
+  } catch (err) {
+    console.error('[ToolHandler] Failed to increment usage:', err)
+  }
 
   return { success: true, data }
 }
@@ -202,19 +207,21 @@ export async function handleEscalateToHuman(
   },
 ): Promise<ToolResult> {
   // Disable bot for this conversation
-  await supabaseAdmin
+  const { error: convError } = await supabaseAdmin
     .from('conversations')
     .update({ bot_enabled: false, status: 'تحتاج_متابعة' })
     .eq('id', conversationId)
+  if (convError) console.error('[ToolHandler] Failed to update conversation:', convError.message)
 
   // Create notification
-  await supabaseAdmin.from('notifications').insert({
+  const { error: notifError } = await supabaseAdmin.from('notifications').insert({
     organization_id: organizationId,
     title: args.urgency === 'عاجل' ? '🔴 طلب تحويل عاجل' : '🟡 طلب تحويل للمستشار',
     body: args.reason,
     type: 'human_requested',
     reference_id: conversationId,
   })
+  if (notifError) console.error('[ToolHandler] Failed to create notification:', notifError.message)
 
   return { success: true, data: { escalated: true } }
 }

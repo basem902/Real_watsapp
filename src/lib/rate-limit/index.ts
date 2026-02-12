@@ -8,6 +8,8 @@ interface RateLimitEntry {
   resetAt: number
 }
 
+// S3: Maximum store size to prevent memory exhaustion attacks
+const MAX_STORE_SIZE = 10_000
 const store = new Map<string, RateLimitEntry>()
 
 // Clean up expired entries every 60 seconds
@@ -31,6 +33,19 @@ export function rateLimit(key: string, config: RateLimitConfig): {
   const entry = store.get(key)
 
   if (!entry || entry.resetAt <= now) {
+    // S3: Evict oldest entries if store is full
+    if (store.size >= MAX_STORE_SIZE) {
+      let oldestKey: string | null = null
+      let oldestTime = Infinity
+      store.forEach((e, k) => {
+        if (e.resetAt < oldestTime) {
+          oldestTime = e.resetAt
+          oldestKey = k
+        }
+      })
+      if (oldestKey) store.delete(oldestKey)
+    }
+
     // New window
     const newEntry: RateLimitEntry = {
       count: 1,
